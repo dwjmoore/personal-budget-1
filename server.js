@@ -34,6 +34,18 @@ app.get('/envelopes', (req, res) => {
 	res.json(envelopes);
 });
 
+app.get('/envelopes/:id', (req, res) => {
+	let id = Number(req.params.id);
+	let element = envelopes.find((envelope) => {
+		return envelope.id === id;
+	});
+	if (element) {
+		res.json(element);
+	} else {
+		res.status(404).send(`Could not find an envelope with id ${id}.`);
+	}
+});
+
 app.post('/envelopes', (req, res) => {
 	let { title, budget } = req.body;
 	let firstLetter = title.charAt(0);
