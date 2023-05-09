@@ -1,6 +1,10 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const envelopes = [
 	{
@@ -28,6 +32,26 @@ app.get('/', (req, res) => {
 
 app.get('/envelopes', (req, res) => {
 	res.json(envelopes);
+});
+
+app.post('/envelopes', (req, res) => {
+	let { title, budget } = req.body;
+	let firstLetter = title.charAt(0);
+	let remainingLetters = title.slice(1);
+	firstLetter = firstLetter.toUpperCase();
+	title = firstLetter + remainingLetters;
+	let index = envelopes.findIndex((envelope) => {
+		return envelope.title === title;
+	});
+	console.log(index);
+	if (index === -1) {
+		res.status(201).send(`Data Received: { title: "${title}", budget: "${budget}" }`);
+		const newEnvelope = { id: newID, title, budget };
+		envelopes.push(newEnvelope);
+		newID++;
+	} else {
+		res.status(409).send(`An envelope with the title ${title} already exists.`);
+	}
 });
 
 app.listen(3000, () => console.log('server started'));
