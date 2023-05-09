@@ -26,4 +26,8 @@ app.get('/', (req, res) => {
 	res.send('Welcome to the budgeting API.');
 });
 
+app.get('/envelopes', (req, res) => {
+	res.json(envelopes);
+});
+
 app.listen(3000, () => console.log('server started'));
