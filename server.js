@@ -35,12 +35,12 @@ app.get('/envelopes', (req, res) => {
 });
 
 app.get('/envelopes/:id', (req, res) => {
-	let id = Number(req.params.id);
-	let element = envelopes.find((envelope) => {
+	const id = Number(req.params.id);
+	const envelope = envelopes.find((envelope) => {
 		return envelope.id === id;
 	});
-	if (element) {
-		res.json(element);
+	if (envelope) {
+		res.json(envelope);
 	} else {
 		res.status(404).send(`Could not find an envelope with id ${id}.`);
 	}
@@ -49,10 +49,10 @@ app.get('/envelopes/:id', (req, res) => {
 app.post('/envelopes', (req, res) => {
 	let { title, budget } = req.body;
 	let firstLetter = title.charAt(0);
-	let remainingLetters = title.slice(1);
+	const remainingLetters = title.slice(1);
 	firstLetter = firstLetter.toUpperCase();
 	title = firstLetter + remainingLetters;
-	let index = envelopes.findIndex((envelope) => {
+	const index = envelopes.findIndex((envelope) => {
 		return envelope.title === title;
 	});
 	console.log(index);
@@ -65,5 +65,22 @@ app.post('/envelopes', (req, res) => {
 		res.status(409).send(`An envelope with the title ${title} already exists.`);
 	}
 });
+
+app.put('/envelopes', (req, res) => {
+	const { id, amountChanged } = req.body;
+	const envelope = envelopes.find((envelope) => {
+		return envelope.id === id;
+	});
+	if (!amountChanged) {
+		res.status(400).send(`Invalid amount entered.`);
+		return;
+	}
+	if (envelope) {
+		envelope.budget += amountChanged;
+		res.send(`The budget changed by ${amountChanged}. The new budget for ${envelope.title} is ${envelope.budget}.`);
+		return;
+	}
+	res.status(404).send(`Could not find an envelope with id ${id}.`);
+})
 
 app.listen(3000, () => console.log('server started'));
