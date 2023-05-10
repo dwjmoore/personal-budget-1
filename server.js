@@ -86,4 +86,17 @@ app.put('/envelopes', (req, res) => {
 	res.status(404).send(`Could not find an envelope with id ${id}.`);
 })
 
+app.delete('/envelopes/:id', (req, res) => {
+	const id = Number(req.params.id);
+	const index = envelopes.findIndex((envelope) => {
+		return envelope.id === id;
+	});
+	if (index !== -1) {
+		envelopes.splice(index, 1);
+		res.status(204);
+		return;
+	}
+	res.status(404).send(`Could not find an envelope with id ${id}.`);
+});
+
 app.listen(3000, () => console.log('server started'));
