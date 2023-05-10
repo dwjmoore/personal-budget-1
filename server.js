@@ -41,9 +41,9 @@ app.get('/envelopes/:id', (req, res) => {
 	});
 	if (envelope) {
 		res.json(envelope);
-	} else {
-		res.status(404).send(`Could not find an envelope with id ${id}.`);
+		return;
 	}
+	res.status(404).send(`Could not find an envelope with id ${id}.`);
 });
 
 app.post('/envelopes', (req, res) => {
@@ -55,15 +55,18 @@ app.post('/envelopes', (req, res) => {
 	const index = envelopes.findIndex((envelope) => {
 		return envelope.title === title;
 	});
-	console.log(index);
+	if (!budget || typeof (budget) !== 'number') {
+		res.status(400).send(`Invalid amount entered.`);
+		return;
+	}
 	if (index === -1) {
 		res.status(201).send(`Data Received: { title: "${title}", budget: "${budget}" }`);
 		const newEnvelope = { id: newID, title, budget };
 		envelopes.push(newEnvelope);
 		newID++;
-	} else {
-		res.status(409).send(`An envelope with the title ${title} already exists.`);
+		return;
 	}
+	res.status(409).send(`An envelope with the title ${title} already exists.`);
 });
 
 app.put('/envelopes', (req, res) => {
@@ -71,7 +74,7 @@ app.put('/envelopes', (req, res) => {
 	const envelope = envelopes.find((envelope) => {
 		return envelope.id === id;
 	});
-	if (!amountChanged) {
+	if (!amountChanged || typeof (amountChanged) !== 'number') {
 		res.status(400).send(`Invalid amount entered.`);
 		return;
 	}
